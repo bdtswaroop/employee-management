@@ -12,12 +12,24 @@ public class CustomEmployeeRepositoryImpl implements CustomEmployeeRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    // @Transactional
+    // @Override
+    // public void logTenant(String customTenantId) {
+    //     // Unsafe concatenation sink: vulnerable to SQL injection
+    //     String sql = "INSERT INTO upload_logs (tenant) VALUES ('" + customTenantId + "')";
+    //     entityManager.createNativeQuery(sql).executeUpdate();
+    // }
+
+    //fixed code
     @Transactional
     @Override
     public void logTenant(String customTenantId) {
-        // Unsafe concatenation sink: vulnerable to SQL injection
-        String sql = "INSERT INTO upload_logs (tenant) VALUES ('" + customTenantId + "')";
-        entityManager.createNativeQuery(sql).executeUpdate();
+        //CWE-89: SQL Injection via customTenantId in logTenant fix
+        String sql = "INSERT INTO upload_logs (tenant) VALUES (:tenant)";
+    
+        entityManager.createNativeQuery(sql)
+            .setParameter("tenant", customTenantId)
+            .executeUpdate();
     }
 
     @Override

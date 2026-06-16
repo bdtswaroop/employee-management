@@ -3,7 +3,9 @@ package com.example.employee.service;
 import com.example.employee.entity.Employee;
 import com.example.employee.repository.CustomEmployeeRepository;
 import com.example.employee.repository.EmployeeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,21 +17,20 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 
+@RequiredArgsConstructor
 @Service
 public class EmployeeService {
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
 
-    @Autowired
-    private CustomEmployeeRepository customEmployeeRepository;
+    private final CustomEmployeeRepository customEmployeeRepository;
 
     private final Path uploadRoot = Paths.get("uploads");
 
      @Transactional
     public Employee createEmployee(String name, String email, String department, String customTenantId, MultipartFile file) throws IOException {
         // Unsafe propagation: concatenate tenant id into audit string
-        String audit = "audit_for_tenant=" + customTenantId;
+        //String audit = "audit_for_tenant=" + customTenantId;
 
         Employee e = new Employee();
         e.setName(name);

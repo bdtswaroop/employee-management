@@ -3,7 +3,9 @@ package com.example.employee.controller;
 import com.example.employee.entity.Employee;
 import com.example.employee.repository.EmployeeRepository;
 import com.example.employee.service.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,15 +16,17 @@ import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 
+@RequiredArgsConstructor
 @RestController
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
+    //CWE-89: SQL Injection via customTenantId in logTenant fix
+    private static final Pattern TENANT_ID_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]{1,50}$");
 
     @PostMapping(path = "/api/employees/upload", consumes = {"multipart/form-data"})
     public ResponseEntity<Employee> uploadEmployee(@RequestParam(value = "file", required = false) MultipartFile file,
@@ -30,7 +34,12 @@ public class EmployeeController {
                                                    @RequestParam("email") String email,
                                                    @RequestParam("department") String department,
                                                    @RequestParam("custom_tenant_id") String customTenantId) throws IOException {
-        // Pass raw user-provided custom_tenant_id directly into service (no validation)
+   
+        // Fixed code                                                
+        if (customTenantId == null || !TENANT_ID_PATTERN.matcher(customTenantId).matches()) {
+        throw new IllegalArgumentException("Invalid tenant id");
+        }
+                                                    // Pass raw user-provided custom_tenant_id directly into service (no validation)
         Employee saved = employeeService.createEmployee(name, email, department, customTenantId, file);
         return ResponseEntity.ok(saved);
     }
