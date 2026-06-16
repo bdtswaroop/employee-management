@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Employee Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-3xl font-bold mb-6">Employee Management</h1>
+
+      <div class="bg-white p-6 rounded shadow mb-6">
+        <h2 class="text-xl font-semibold mb-4">Add Employee</h2>
+        <form id="uploadForm" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium">Name</label>
+            <input name="name" required class="mt-1 block w-full border rounded p-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Email</label>
+            <input name="email" required type="email" class="mt-1 block w-full border rounded p-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Department</label>
+            <input name="department" required class="mt-1 block w-full border rounded p-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Tenant ID (custom_tenant_id)</label>
+            <input name="custom_tenant_id" required class="mt-1 block w-full border rounded p-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Profile Picture (max 2MB) — optional</label>
+            <input name="file" type="file" accept="image/*" class="mt-1" />
+          </div>
+          <div>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Upload</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-white p-6 rounded shadow">
+        <h2 class="text-xl font-semibold mb-4">Employees</h2>
+        <table class="min-w-full divide-y divide-gray-200" id="employeesTable">
+          <thead>
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Internal Code</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Picture</th>
+              <th class="px-6 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="employeesBody" class="bg-white divide-y divide-gray-200"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      async function fetchEmployees(){
+        const res = await fetch('/api/employees');
+        const data = await res.json();
+        const body = document.getElementById('employeesBody');
+        body.innerHTML = '';
+        data.forEach(emp => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="px-6 py-4">${emp.id}</td>
+            <td class="px-6 py-4">${emp.name}</td>
+            <td class="px-6 py-4">${emp.email}</td>
+            <td class="px-6 py-4">${emp.department}</td>
+            <td class="px-6 py-4">${emp.internalCode}</td>
+            <td class="px-6 py-4">${emp.profilePicturePath ? '<a class="text-blue-600" href="/uploads/' + emp.profilePicturePath + '">view</a>' : ''}</td>
+            <td class="px-6 py-4"><button data-id="${emp.internalCode}" class="deleteBtn bg-red-500 text-white px-3 py-1 rounded">Delete</button></td>
+          `;
+          body.appendChild(tr);
+        });
+        document.querySelectorAll('.deleteBtn').forEach(btn => btn.addEventListener('click', async (e) => {
+          const id = e.target.getAttribute('data-id');
+          await fetch('/api/employees/delete?employeeIdentifier=' + encodeURIComponent(id), { method: 'DELETE' });
+          fetchEmployees();
+        }));
+      }
+
+      document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const fd = new FormData(form);
+        const res = await fetch('/api/employees/upload', { method: 'POST', body: fd });
+        if (res.ok) {
+          form.reset();
+          fetchEmployees();
+        } else {
+          alert('Upload failed');
+        }
+      });
+
+      fetchEmployees();
+    </script>
+  </body>
+</html>
