@@ -10,11 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -57,15 +54,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/uploads/{filename:.+}")
-    public ResponseEntity<Resource> serveUpload(@PathVariable String filename) throws Exception {
-        java.nio.file.Path file = java.nio.file.Paths.get("uploads").resolve(filename).normalize();
-        Resource resource = new UrlResource(file.toUri());
-        if (!resource.exists()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
+    public ResponseEntity<Resource> serveUpload(@PathVariable String filename) throws MalformedURLException {
+       return employeeService.uploadFile(filename);
     }
 }

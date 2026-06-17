@@ -6,11 +6,18 @@ import com.example.employee.repository.EmployeeRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -71,5 +78,35 @@ public class EmployeeService {
 
         // attempt to remove from JPA-managed store as well (best-effort)
         employeeRepository.findByInternalCode(employeeIdentifier).ifPresent(employeeRepository::delete);
+    }
+
+    public ResponseEntity<Resource> uploadFile(String filename) throws MalformedURLException {       
+        Path file = sanitizeFilename(filename);
+        Resource resource = new UrlResource(file.toUri());
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+    private static final Path UPLOAD_ROOT =
+            Paths.get("uploads").toAbsolutePath().normalize();
+
+     //CWE-22: Path Traversal via upload file fix
+    public static Path sanitizeFilename(String filename) {
+
+        Path resolved = UPLOAD_ROOT.resolve(filename)
+                                   .normalize()
+                                   .toAbsolutePath();
+
+        if (!resolved.startsWith(UPLOAD_ROOT)) {
+            throw new IllegalArgumentException(
+                    "Invalid filename: path traversal attempt");
+        }
+
+        return resolved;
     }
 }
