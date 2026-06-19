@@ -3,16 +3,22 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Employee Admin</title>
+    <title>Employee Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 p-8">
-    <div class="max-w-4xl mx-auto">
-      <h1 class="text-3xl font-bold mb-6">Employee Management</h1>
+  <body class="bg-slate-100 min-h-screen">
+    <main class="max-w-6xl mx-auto p-6">
+      <header class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900">Employee Management</h1>
+          <p class="text-sm text-slate-600">Create employees, review details, and attach documents.</p>
+        </div>
+        <button id="logoutBtn" class="bg-slate-800 text-white px-4 py-2 rounded">Logout</button>
+      </header>
 
-      <div class="bg-white p-6 rounded shadow mb-6">
+      <section class="bg-white p-6 rounded shadow mb-6">
         <h2 class="text-xl font-semibold mb-4">Add Employee</h2>
-        <form id="uploadForm" class="space-y-4">
+        <form id="uploadForm" class="grid md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium">Name</label>
             <input name="name" required class="mt-1 block w-full border rounded p-2" />
@@ -26,40 +32,57 @@
             <input name="department" required class="mt-1 block w-full border rounded p-2" />
           </div>
           <div>
-            <label class="block text-sm font-medium">Tenant ID (custom_tenant_id)</label>
+            <label class="block text-sm font-medium">Tenant ID</label>
             <input name="custom_tenant_id" required class="mt-1 block w-full border rounded p-2" />
           </div>
-          <div>
-            <label class="block text-sm font-medium">Profile Picture (max 2MB) — optional</label>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium">Profile Picture</label>
             <input name="file" type="file" accept="image/*" class="mt-1" />
           </div>
-          <div>
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Upload</button>
+          <div class="md:col-span-2 flex items-center gap-3">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Save and Continue</button>
+            <span id="formStatus" class="text-sm text-slate-600"></span>
           </div>
         </form>
-      </div>
+      </section>
 
-      <div class="bg-white p-6 rounded shadow">
-        <h2 class="text-xl font-semibold mb-4">Employees</h2>
-        <table class="min-w-full divide-y divide-gray-200" id="employeesTable">
-          <thead>
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Internal Code</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Picture</th>
-              <th class="px-6 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="employeesBody" class="bg-white divide-y divide-gray-200"></tbody>
-        </table>
-      </div>
-    </div>
+      <section class="bg-white p-6 rounded shadow">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold">Employees</h2>
+          <button id="refreshBtn" class="border border-slate-300 px-3 py-2 rounded">Refresh</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200" id="employeesTable">
+            <thead>
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Department</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tenant</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Picture</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="employeesBody" class="bg-white divide-y divide-gray-200"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
 
     <script>
-      async function fetchEmployees(){
+      const sessionUser = sessionStorage.getItem('employeeUser');
+      if (!sessionUser) {
+        window.location.href = '/login.html';
+      }
+
+      const statusEl = document.getElementById('formStatus');
+
+      function renderFileLink(filename, label) {
+        return filename ? `<a class="text-blue-600 underline" href="/uploads/${filename}" target="_blank">${label}</a>` : '';
+      }
+
+      async function fetchEmployees() {
         const res = await fetch('/api/employees');
         const data = await res.json();
         const body = document.getElementById('employeesBody');
@@ -67,13 +90,16 @@
         data.forEach(emp => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td class="px-6 py-4">${emp.id}</td>
-            <td class="px-6 py-4">${emp.name}</td>
-            <td class="px-6 py-4">${emp.email}</td>
-            <td class="px-6 py-4">${emp.department}</td>
-            <td class="px-6 py-4">${emp.internalCode}</td>
-            <td class="px-6 py-4">${emp.profilePicturePath ? '<a class="text-blue-600" href="/uploads/' + emp.profilePicturePath + '">view</a>' : ''}</td>
-            <td class="px-6 py-4"><button data-id="${emp.internalCode}" class="deleteBtn bg-red-500 text-white px-3 py-1 rounded">Delete</button></td>
+            <td class="px-4 py-3">${emp.id}</td>
+            <td class="px-4 py-3">${emp.name}</td>
+            <td class="px-4 py-3">${emp.email}</td>
+            <td class="px-4 py-3">${emp.department}</td>
+            <td class="px-4 py-3">${emp.customTenantId || ''}</td>
+            <td class="px-4 py-3">${renderFileLink(emp.profilePicturePath, 'view')}</td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <a class="bg-emerald-600 text-white px-3 py-1 rounded" href="/employee-detail.html?id=${emp.id}">Details</a>
+              <button data-id="${emp.internalCode}" class="deleteBtn bg-red-500 text-white px-3 py-1 rounded ml-2">Delete</button>
+            </td>
           `;
           body.appendChild(tr);
         });
@@ -88,13 +114,22 @@
         e.preventDefault();
         const form = e.target;
         const fd = new FormData(form);
+        statusEl.textContent = 'Saving employee...';
         const res = await fetch('/api/employees/upload', { method: 'POST', body: fd });
         if (res.ok) {
-          form.reset();
-          fetchEmployees();
+          const employee = await res.json();
+          sessionStorage.setItem('lastEmployee', JSON.stringify(employee));
+          window.location.href = `/employee-detail.html?id=${employee.id}`;
         } else {
-          alert('Upload failed');
+          statusEl.textContent = 'Upload failed. Check the fields and try again.';
         }
+      });
+
+      document.getElementById('refreshBtn').addEventListener('click', fetchEmployees);
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        sessionStorage.removeItem('employeeUser');
+        sessionStorage.removeItem('lastEmployee');
+        window.location.href = '/login.html';
       });
 
       fetchEmployees();

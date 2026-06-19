@@ -33,6 +33,7 @@ public class CustomEmployeeRepositoryImpl implements CustomEmployeeRepository {
     }
 
     @Override
+    @Transactional
     public void deleteByIdentifier(String employeeIdentifier) {
         // Unsafe deletion sink: vulnerable to SQL injection
         String del = "DELETE FROM employees WHERE internal_code = '" + employeeIdentifier + "'";

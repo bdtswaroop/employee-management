@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Employee Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-100 min-h-screen flex items-center justify-center p-6">
+    <main class="w-full max-w-md bg-white rounded shadow p-6">
+      <h1 class="text-2xl font-bold text-slate-900 mb-2">Employee Login</h1>
+      <p class="text-sm text-slate-600 mb-6">Use the static test account to enter the demo flow.</p>
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium">Username</label>
+          <input name="username" value="emp1" required class="mt-1 block w-full border rounded p-2" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Password</label>
+          <input name="password" value="123456" required type="password" class="mt-1 block w-full border rounded p-2" />
+        </div>
+        <button class="w-full bg-blue-600 text-white px-4 py-2 rounded" type="submit">Login</button>
+        <p id="loginStatus" class="text-sm text-red-600"></p>
+      </form>
+    </main>
+
+    <script>
+      document.getElementById('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const form = event.target;
+        const payload = {
+          username: form.username.value,
+          password: form.password.value
+        };
+
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          sessionStorage.setItem('employeeUser', payload.username);
+          window.location.href = '/index.html';
+          return;
+        }
+
+        document.getElementById('loginStatus').textContent = 'Invalid username or password';
+      });
+    </script>
+  </body>
+</html>

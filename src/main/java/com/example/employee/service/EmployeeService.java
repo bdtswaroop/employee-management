@@ -1,7 +1,9 @@
 package com.example.employee.service;
 
 import com.example.employee.entity.Employee;
+import com.example.employee.entity.EmployeeDocument;
 import com.example.employee.repository.CustomEmployeeRepository;
+import com.example.employee.repository.EmployeeDocumentRepository;
 import com.example.employee.repository.EmployeeRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,12 +25,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+
+    private final EmployeeDocumentRepository employeeDocumentRepository;
 
     private final CustomEmployeeRepository customEmployeeRepository;
 
@@ -43,21 +48,13 @@ public class EmployeeService {
         e.setName(name);
         e.setEmail(email);
         e.setDepartment(department);
+        e.setCustomTenantId(customTenantId);
         // use raw customTenantId as part of internal code routing - intentionally unsafe
         e.setInternalCode(name + "-" + customTenantId + "-" + Instant.now().toEpochMilli());
 
         String filename = null;
         if (file != null && !file.isEmpty()) {
-            // Ensure uploads directory exists
-            Files.createDirectories(uploadRoot);
-
-            filename = Instant.now().toEpochMilli() + "_" + file.getOriginalFilename();
-            Path target = uploadRoot.resolve(filename);
-            // Ensure parent exists and write via stream to avoid cross-filesystem move issues
-            Files.createDirectories(target.getParent());
-            try (java.io.InputStream in = file.getInputStream()) {
-                Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
-            }
+            filename = storeUpload(file);
             // Store relative filename so the app can serve it under /uploads/{filename}
             e.setProfilePicturePath(filename);
         } else {
@@ -70,6 +67,36 @@ public class EmployeeService {
         customEmployeeRepository.logTenant(customTenantId);
 
         return saved;
+    }
+
+    @Transactional
+    public EmployeeDocument addEmployeeDocument(Long employeeId, MultipartFile file, String documentName) throws IOException {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + employeeId));
+
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Document file is required");
+            // CWE-209: Uncomment to test: emp-demo-error-message-user-input
+            // throw new IllegalArgumentException("Document file is required:"+ file);
+
+        }
+
+        String filename = storeUpload(file);
+        EmployeeDocument document = new EmployeeDocument();
+        document.setEmployee(employee);
+        document.setDocumentName(documentName == null || documentName.isBlank()
+                ? file.getOriginalFilename()
+                : documentName);
+        document.setDocumentPath(filename);
+        document.setContentType(file.getContentType());
+        document.setSizeBytes(file.getSize());
+        document.setUploadedAt(Instant.now());
+
+        return employeeDocumentRepository.save(document);
+    }
+
+    public List<EmployeeDocument> listEmployeeDocuments(Long employeeId) {
+        return employeeDocumentRepository.findByEmployeeId(employeeId);
     }
 
     public void deleteEmployee(String employeeIdentifier) {
@@ -108,5 +135,18 @@ public class EmployeeService {
         }
 
         return resolved;
+    }
+
+    //cwe-434: Unrestricted File Upload triggers here. 
+    private String storeUpload(MultipartFile file) throws IOException {
+        Files.createDirectories(uploadRoot);
+
+        String filename = Instant.now().toEpochMilli() + "_" + file.getOriginalFilename();
+        Path target = uploadRoot.resolve(filename);
+        Files.createDirectories(target.getParent());
+        try (java.io.InputStream in = file.getInputStream()) {
+            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+        }
+        return filename;
     }
 }
