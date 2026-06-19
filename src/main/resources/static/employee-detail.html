@@ -117,6 +117,20 @@
             <td class="px-4 py-3">${uploaded}</td>
             <td class="px-4 py-3">${doc.documentPath ? `<a class="text-blue-600 underline" href="/uploads/${doc.documentPath}" target="_blank">open</a>` : ''}</td>
           `;
+
+          //Uncomment to test CWE-94 DOM Injection with barriers
+          // tr.innerHTML = DOMPurify.sanitize(`
+          //   <td class="px-4 py-3">${doc.id}</td>
+          //   <td class="px-4 py-3">${doc.documentName || ''}</td>
+          //   <td class="px-4 py-3">${doc.contentType || ''}</td>
+          //   <td class="px-4 py-3">${doc.sizeBytes || 0}</td>
+          //   <td class="px-4 py-3">${uploaded}</td>
+          //   <td class="px-4 py-3">
+          //     ${doc.documentPath
+          //       ? `<a class="text-blue-600 underline" href="/uploads/${encodeURIComponent(doc.documentPath)}" target="_blank">open</a>`
+          //       : ''}
+          //   </td>
+          // `);
           body.appendChild(tr);
         });
       }
