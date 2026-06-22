@@ -119,9 +119,9 @@
         if (res.ok) {
           const employee = await res.json();
           sessionStorage.setItem('lastEmployee', JSON.stringify(employee));
-          const safeId = validateRedirectId(employee.id); 
+         // const safeId = validateRedirectId(employee.id); 
          // pass this safeId to the redirect URL. 
-          window.location.href = `/employee-detail.html?id=${safeId}`;
+          window.location.href = `/employee-detail.html?id=${employee.id}`;
         } else {
           statusEl.textContent = 'Upload failed. Check the fields and try again.';
         }
