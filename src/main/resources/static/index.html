@@ -119,7 +119,9 @@
         if (res.ok) {
           const employee = await res.json();
           sessionStorage.setItem('lastEmployee', JSON.stringify(employee));
-          window.location.href = `/employee-detail.html?id=${employee.id}`;
+          const safeId = validateRedirectId(employee.id); 
+         // pass this safeId to the redirect URL. 
+          window.location.href = `/employee-detail.html?id=${safeId}`;
         } else {
           statusEl.textContent = 'Upload failed. Check the fields and try again.';
         }
@@ -131,6 +133,13 @@
         sessionStorage.removeItem('lastEmployee');
         window.location.href = '/login.html';
       });
+
+      function validateRedirectId(id) {
+        if (!/^[0-9]+$/.test(id)) {
+          throw new Error("Invalid employee id");
+        }
+        return id;
+      }
 
       fetchEmployees();
     </script>
