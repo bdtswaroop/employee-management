@@ -118,7 +118,7 @@
             <td class="px-4 py-3">${doc.documentPath ? `<a class="text-blue-600 underline" href="/uploads/${doc.documentPath}" target="_blank">open</a>` : ''}</td>
           `;
 
-          //Uncomment to test CWE-94 DOM Injection with barriers
+          //Uncomment to test CWE-79: Improper Neutralization of Input During Web Page Generation
           // tr.innerHTML = DOMPurify.sanitize(`
           //   <td class="px-4 py-3">${doc.id}</td>
           //   <td class="px-4 py-3">${doc.documentName || ''}</td>
