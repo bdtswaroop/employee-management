@@ -1,10 +1,12 @@
 /**
-  * @name Path Traversal Flow
-  * @kind path-problem
-  * @description CWE-22: Finds user-controlled data flowing into file operations
-  * @problem.severity warning
-  * @id custom/java/path-traversal
-  */
+ * @name Path Traversal Flow
+ * @description CWE-22: User-controlled data flows into file system operations.
+ * @id custom/java/path-traversal
+ * @kind path-problem
+ * @tags security
+ *       external/cwe/cwe-022
+ * @problem.severity warning
+ */
 
 import java
 import semmle.code.java.dataflow.DataFlow

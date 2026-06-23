@@ -1,9 +1,11 @@
 /**
  * @name Employee User Input in Exception Message
- * @description CWE-209: Finds request-controlled values used in exception messages.
+ * @description CWE-209: User-controlled data is included in exception messages.
  * @id custom/java/emp-demo-error-message-user-input
  * @kind path-problem
- * @problem.severity error
+ * @tags security
+ *       external/cwe/cwe-209
+ * @problem.severity warning
  */
 
 import java

@@ -1,7 +1,9 @@
 /**
  * @name HTTP Header Injection
- * @description CWE-113: Finds user-controlled data flowing into HTTP response headers.
+ * @description CWE-113: User-controlled data flows into HTTP response headers.
  * @kind path-problem
+ * @tags security
+ *       external/cwe/cwe-113
  * @problem.severity error
  * @precision high
  * @id custom/java/header-injection-demo

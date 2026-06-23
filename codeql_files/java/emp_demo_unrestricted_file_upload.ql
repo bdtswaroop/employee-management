@@ -1,8 +1,10 @@
 /**
  * @name Employee Unrestricted File Upload
- * @description CWE-434: Finds Spring upload handlers that accept MultipartFile and write files without local content validation.
+ * @description CWE-434: Detects Spring upload handlers that accept MultipartFile and write files without validating content or type.
  * @id custom/java/emp-demo-unrestricted-file-upload
  * @kind path-problem
+ * @tags security
+ *       external/cwe/cwe-434
  * @problem.severity error
  */
 

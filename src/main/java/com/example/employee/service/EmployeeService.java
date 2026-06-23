@@ -155,4 +155,36 @@ public class EmployeeService {
         }
         return filename;
     }
+
+
+    //  Uncomment to test the sanitization of user-controlled filenames (CWE-73: User-controlled filename flows into file path operations). 
+    //  private String storeUpload(MultipartFile file) throws IOException {
+    //     Files.createDirectories(uploadRoot);
+
+    //      String fileName = file.getOriginalFilename();
+    //     if (fileName == null) {
+    //         throw new IllegalArgumentException("Invalid file name");
+    //     }
+
+    //     String cleanName = Paths.get(fileName)
+    //         .getFileName()
+    //         .toString();
+
+    //     cleanName = cleanName.replaceAll("[^a-zA-Z0-9._-]", "_");
+
+    //     if (cleanName.isBlank()) {
+    //         cleanName = "file";
+    //     }
+
+    //     String filename = Instant.now().toEpochMilli() + "_" + cleanName;
+    //     Path target = uploadRoot.resolve(filename);
+    //     if (!target.startsWith(uploadRoot)) {
+    //         throw new SecurityException("Invalid file path detected");
+    //     }
+    //     Files.createDirectories(target.getParent());
+    //     try (java.io.InputStream in = file.getInputStream()) {
+    //         Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+    //     }
+    //     return filename;
+    // }
 }

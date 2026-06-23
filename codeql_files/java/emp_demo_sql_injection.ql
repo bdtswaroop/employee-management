@@ -1,11 +1,12 @@
-/** 
- * @name SQL Injection 
- * @description CWE-89: Finds user-controlled data flowing into SQL query execution APIs. 
- * @id custom/java/sql-injection 
+/**
+ * @name SQL Injection
+ * @description CWE-89: User-controlled data flows into SQL query execution APIs.
+ * @id custom/java/sql-injection
+ * @kind path-problem
+ * @tags security
+ *       external/cwe/cwe-089
  * @problem.severity error
- * @tags security 
-         external/cwe/cwe-089 
-**/
+ */
 
 import java
 import semmle.code.java.dataflow.DataFlow
