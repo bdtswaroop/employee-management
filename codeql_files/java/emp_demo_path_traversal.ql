@@ -1,6 +1,7 @@
 /**
   * @name Path Traversal Flow
   * @kind path-problem
+  * @description CWE-22: Finds user-controlled data flowing into file operations
   * @problem.severity warning
   * @id custom/java/path-traversal
   */

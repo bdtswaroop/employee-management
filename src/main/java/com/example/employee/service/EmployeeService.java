@@ -117,6 +117,12 @@ public class EmployeeService {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+
+        //  UnComment to check CWE-113: HTTP Header Injection
+        //  return ResponseEntity.ok()
+        //         .contentType(MediaType.APPLICATION_OCTET_STREAM)
+        //         .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file + "\"")
+        //         .body(resource);
     }
 
     private static final Path UPLOAD_ROOT =

@@ -1,7 +1,7 @@
 /**
 
 * @name Command Injection through Runtime.exec
-* @description Finds user-controlled data flowing into Runtime.exec
+* @description CWE-89: Finds user-controlled data flowing into Runtime.exec
 * @kind path-problem
 * @problem.severity error
 * @precision high
