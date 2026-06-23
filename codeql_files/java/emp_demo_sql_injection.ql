@@ -2,6 +2,7 @@
  * @name SQL Injection 
  * @description CWE-89: Finds user-controlled data flowing into SQL query execution APIs. 
  * @id custom/java/sql-injection 
+ * @problem.severity error
  * @tags security 
          external/cwe/cwe-089 
 **/

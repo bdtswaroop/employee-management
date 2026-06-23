@@ -3,6 +3,7 @@
  * @description CWE-434: Finds Spring upload handlers that accept MultipartFile and write files without local content validation.
  * @id custom/java/emp-demo-unrestricted-file-upload
  * @kind path-problem
+ * @problem.severity error
  */
 
 import java

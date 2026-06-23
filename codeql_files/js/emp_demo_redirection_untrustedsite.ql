@@ -2,7 +2,8 @@
  * @name Client-side Open Redirect
  * @kind path-problem
  * @id custom/js/open-redirect
- * @Desctiption CWE-601: URL Redirection to Untrusted Site ('Open Redirect')
+ * @problem.severity error
+ * @Description CWE-601: URL Redirection to Untrusted Site ('Open Redirect')
  */
 
 import javascript

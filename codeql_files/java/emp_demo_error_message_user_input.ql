@@ -3,6 +3,7 @@
  * @description CWE-209: Finds request-controlled values used in exception messages.
  * @id custom/java/emp-demo-error-message-user-input
  * @kind path-problem
+ * @problem.severity error
  */
 
 import java
