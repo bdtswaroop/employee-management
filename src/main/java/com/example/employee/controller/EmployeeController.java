@@ -99,4 +99,14 @@ public class EmployeeController {
     public ResponseEntity<Resource> serveUpload(@PathVariable String filename) throws MalformedURLException {
        return employeeService.uploadFile(filename);
     }
+
+    @PostMapping("/api/import")
+    public ResponseEntity<String> importEmployee(
+        @RequestParam MultipartFile file)
+        throws Exception {
+
+    employeeService.importEmployee(file);
+
+    return ResponseEntity.ok("Imported");
+}
 }

@@ -13,7 +13,13 @@
           <h1 class="text-3xl font-bold text-slate-900">Employee Detail</h1>
           <p class="text-sm text-slate-600">Review the saved employee and upload supporting documents.</p>
         </div>
-        <a class="bg-slate-800 text-white px-4 py-2 rounded" href="/index.html">Back</a>
+        <nav class="flex items-center gap-3">
+          <a class="text-sm text-slate-700 hover:underline" id="navSearch" href="/employee-search.html">Search</a>
+          <a class="text-sm text-slate-700 hover:underline" id="navReports" href="/report-generator.html">Reports</a>
+          <a class="text-sm text-slate-700 hover:underline" id="navAdmin" href="/admin-settings.html">Admin</a>
+          <a class="text-sm text-slate-700 hover:underline" id="navNotif" href="/notification-center.html">Notifications</a>
+          <a class="bg-slate-800 text-white px-4 py-2 rounded" id="backBtn" href="/index.html">Back</a>
+        </nav>
       </header>
 
       <section class="bg-white p-6 rounded shadow mb-6">
@@ -115,7 +121,10 @@
             <td class="px-4 py-3">${doc.contentType || ''}</td>
             <td class="px-4 py-3">${doc.sizeBytes || 0}</td>
             <td class="px-4 py-3">${uploaded}</td>
-            <td class="px-4 py-3">${doc.documentPath ? `<a class="text-blue-600 underline" href="/uploads/${doc.documentPath}" target="_blank">open</a>` : ''}</td>
+            <td class="px-4 py-3">
+              ${doc.documentPath ? `<a class="text-blue-600 underline mr-2" href="/uploads/${doc.documentPath}" target="_blank">open</a>` : ''}
+              ${doc.documentPath ? `<a class="text-slate-700 underline" href="/document-viewer.html?path=${encodeURIComponent(doc.documentPath)}" target="_blank">viewer</a>` : ''}
+            </td>
           `;
 
           //Uncomment to test CWE-79: Improper Neutralization of Input During Web Page Generation

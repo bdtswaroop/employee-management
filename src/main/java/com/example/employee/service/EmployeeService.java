@@ -19,6 +19,9 @@ import org.springframework.http.MediaType;
 
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputFilter;
+import java.io.ObjectInputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -154,6 +157,39 @@ public class EmployeeService {
             Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
         }
         return filename;
+    }
+
+    public void importEmployee(
+        MultipartFile file)
+        throws Exception {
+
+    deserializeEmployee(
+            file.getInputStream());
+}
+
+   private void deserializeEmployee(
+        InputStream in)
+        throws Exception {
+
+    ObjectInputStream ois = new ObjectInputStream(in);
+
+    //Uncomment to test CWE-502: Deserialization of Untrusted Data
+    // ObjectInputStream ois = createSafeObjectInputStream(in);
+    // Object obj = ois.readObject();
+}
+
+    private ObjectInputStream createSafeObjectInputStream(
+            InputStream in)
+            throws IOException {
+
+        ObjectInputStream ois =
+                new ObjectInputStream(in);
+
+        ois.setObjectInputFilter(
+                ObjectInputFilter.Config.createFilter(
+                        "com.employee.model.Employee;!*"));
+
+        return ois;
     }
 
 

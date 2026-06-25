@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Employee Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-100 min-h-screen">
+    <main class="max-w-5xl mx-auto p-6">
+      <header class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900">Employee Search</h1>
+          <p class="text-sm text-slate-600">Search employees by name, email or department.</p>
+        </div>
+        <a class="bg-slate-800 text-white px-4 py-2 rounded" href="/index.html">Back</a>
+      </header>
+
+      <section class="bg-white p-6 rounded shadow mb-6">
+        <form id="searchForm" class="grid md:grid-cols-3 gap-4">
+          <input name="q" placeholder="Search by name, email or department" class="mt-1 block w-full border rounded p-2 md:col-span-2" />
+          <div class="flex gap-3 items-center">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded" type="submit">Search</button>
+            <button id="clearBtn" type="button" class="border px-3 py-2 rounded">Clear</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="bg-white p-6 rounded shadow">
+        <h2 class="text-xl font-semibold mb-4">Results</h2>
+        <div id="results" class="text-sm text-slate-700">No results yet.</div>
+      </section>
+    </main>
+
+    <script>
+      if (!sessionStorage.getItem('employeeUser')) window.location.href = '/login.html';
+
+      document.getElementById('searchForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const q = e.target.q.value || '';
+        const res = await fetch('/api/employees/search?q=' + encodeURIComponent(q));
+        const data = await res.json();
+        const el = document.getElementById('results');
+        if (!data.length) { el.textContent = 'No results.'; return; }
+        el.innerHTML = '<ul class="space-y-2">' + data.map(emp=>`<li class="p-2 border rounded"><a class="text-blue-600 underline" href="/employee-detail.html?id=${emp.id}">${emp.name} — ${emp.email}</a></li>`).join('') + '</ul>';
+      });
+
+      document.getElementById('clearBtn').addEventListener('click', () => { document.getElementById('searchForm').reset(); document.getElementById('results').textContent = 'No results yet.'; });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Edit Employee</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-100 min-h-screen">
+    <main class="max-w-4xl mx-auto p-6">
+      <header class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900">Edit Employee</h1>
+          <p class="text-sm text-slate-600">Modify employee data and save changes.</p>
+        </div>
+        <a class="bg-slate-800 text-white px-4 py-2 rounded" href="/index.html">Back</a>
+      </header>
+
+      <section class="bg-white p-6 rounded shadow">
+        <form id="editForm" class="grid md:grid-cols-2 gap-4">
+          <input name="id" type="hidden" />
+          <div>
+            <label class="block text-sm font-medium">Name</label>
+            <input name="name" required class="mt-1 block w-full border rounded p-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Email</label>
+            <input name="email" required type="email" class="mt-1 block w-full border rounded p-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Department</label>
+            <input name="department" class="mt-1 block w-full border rounded p-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Tenant ID</label>
+            <input name="custom_tenant_id" class="mt-1 block w-full border rounded p-2" />
+          </div>
+          <div class="md:col-span-2 flex items-center gap-3">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded" type="submit">Save Changes</button>
+            <span id="saveStatus" class="text-sm text-slate-600"></span>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      if (!sessionStorage.getItem('employeeUser')) window.location.href = '/login.html';
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const form = document.getElementById('editForm');
+      const status = document.getElementById('saveStatus');
+
+      async function load() {
+        if (!id) return;
+        const res = await fetch('/api/employees/' + encodeURIComponent(id));
+        if (!res.ok) return;
+        const emp = await res.json();
+        form.id.value = emp.id; form.name.value = emp.name || ''; form.email.value = emp.email || ''; form.department.value = emp.department || ''; form.custom_tenant_id.value = emp.customTenantId || '';
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const body = { id: form.id.value, name: form.name.value, email: form.email.value, department: form.department.value, customTenantId: form.custom_tenant_id.value };
+        status.textContent = 'Saving...';
+        const res = await fetch('/api/employees/' + encodeURIComponent(form.id.value), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        status.textContent = res.ok ? 'Saved.' : 'Save failed.';
+      });
+
+      load();
+    </script>
+  </body>
+</html>

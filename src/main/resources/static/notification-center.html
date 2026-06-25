@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Notification Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-100 min-h-screen">
+    <main class="max-w-4xl mx-auto p-6">
+      <header class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900">Notification Center</h1>
+          <p class="text-sm text-slate-600">View system and user notifications.</p>
+        </div>
+        <a class="bg-slate-800 text-white px-4 py-2 rounded" href="/index.html">Back</a>
+      </header>
+
+      <section class="bg-white p-6 rounded shadow">
+        <div id="notifications">Loading...</div>
+      </section>
+    </main>
+
+    <script>
+      if (!sessionStorage.getItem('employeeUser')) window.location.href = '/login.html';
+      async function load() { const res = await fetch('/api/notifications'); if (!res.ok) { document.getElementById('notifications').textContent = 'Failed to load.'; return; } const data = await res.json(); document.getElementById('notifications').innerHTML = data.length ? '<ul class="space-y-2">'+data.map(n=>`<li class="p-2 border rounded">${n.message}</li>`).join('')+'</ul>' : 'No notifications.'; }
+      load();
+    </script>
+  </body>
+</html>

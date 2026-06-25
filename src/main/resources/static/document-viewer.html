@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Document Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-100 min-h-screen">
+    <main class="max-w-4xl mx-auto p-6">
+      <header class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900">Document Viewer</h1>
+          <p class="text-sm text-slate-600">View uploaded documents safely in a sandboxed viewer.</p>
+        </div>
+        <a class="bg-slate-800 text-white px-4 py-2 rounded" href="/employee-detail.html">Back</a>
+      </header>
+
+      <section class="bg-white p-6 rounded shadow">
+        <div id="docContainer">No document selected.</div>
+      </section>
+    </main>
+
+    <script>
+      if (!sessionStorage.getItem('employeeUser')) window.location.href = '/login.html';
+      const params = new URLSearchParams(window.location.search);
+      const path = params.get('path');
+      const container = document.getElementById('docContainer');
+      if (!path) { container.textContent = 'Missing path parameter.'; } else {
+        // Use an iframe with sandbox to reduce risk of DOM-escaping issues
+        const iframe = document.createElement('iframe');
+        iframe.src = '/uploads/' + encodeURIComponent(path);
+        iframe.width = '100%'; iframe.height = '600'; iframe.sandbox = 'allow-same-origin';
+        container.innerHTML = '';
+        container.appendChild(iframe);
+      }
+    </script>
+  </body>
+</html>

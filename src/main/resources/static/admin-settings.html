@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-100 min-h-screen">
+    <main class="max-w-4xl mx-auto p-6">
+      <header class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900">Admin Settings</h1>
+          <p class="text-sm text-slate-600">Manage application-level settings (demo only).</p>
+        </div>
+        <a class="bg-slate-800 text-white px-4 py-2 rounded" href="/index.html">Back</a>
+      </header>
+
+      <section class="bg-white p-6 rounded shadow">
+        <form id="settingsForm" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium">Enable Uploads</label>
+            <select name="uploads" class="mt-1 block w-48 border rounded p-2"><option value="true">True</option><option value="false">False</option></select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Maintenance Message</label>
+            <input name="message" class="mt-1 block w-full border rounded p-2" />
+          </div>
+          <div>
+            <button class="bg-blue-600 text-white px-4 py-2 rounded" type="submit">Save</button>
+            <span id="settingsStatus" class="text-sm text-slate-600"></span>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      if (!sessionStorage.getItem('employeeUser')) window.location.href = '/login.html';
+      document.getElementById('settingsForm').addEventListener('submit', async (e) => { e.preventDefault(); document.getElementById('settingsStatus').textContent = 'Saved (demo).'; });
+    </script>
+  </body>
+</html>

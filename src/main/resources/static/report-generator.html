@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Report Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-100 min-h-screen">
+    <main class="max-w-5xl mx-auto p-6">
+      <header class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900">Report Generator</h1>
+          <p class="text-sm text-slate-600">Generate CSV or PDF reports for employees.</p>
+        </div>
+        <a class="bg-slate-800 text-white px-4 py-2 rounded" href="/index.html">Back</a>
+      </header>
+
+      <section class="bg-white p-6 rounded shadow mb-6">
+        <form id="reportForm" class="grid md:grid-cols-3 gap-4">
+          <select name="type" class="mt-1 block w-full border rounded p-2">
+            <option value="csv">CSV</option>
+            <option value="pdf">PDF</option>
+          </select>
+          <input name="q" placeholder="Filter (department, tenant)" class="mt-1 block w-full border rounded p-2 md:col-span-2" />
+          <div class="md:col-span-3 flex gap-3 items-center">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded" type="submit">Generate</button>
+            <span id="reportStatus" class="text-sm text-slate-600"></span>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      if (!sessionStorage.getItem('employeeUser')) window.location.href = '/login.html';
+      document.getElementById('reportForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const t = e.target.type.value; const q = e.target.q.value || '';
+        const status = document.getElementById('reportStatus'); status.textContent = 'Generating...';
+        const res = await fetch('/api/reports/generate?type=' + encodeURIComponent(t) + '&q=' + encodeURIComponent(q));
+        if (!res.ok) { status.textContent = 'Generation failed.'; return; }
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob); window.open(url, '_blank'); status.textContent = 'Done.';
+      });
+    </script>
+  </body>
+</html>

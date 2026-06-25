@@ -13,7 +13,13 @@
           <h1 class="text-3xl font-bold text-slate-900">Employee Management</h1>
           <p class="text-sm text-slate-600">Create employees, review details, and attach documents.</p>
         </div>
-        <button id="logoutBtn" class="bg-slate-800 text-white px-4 py-2 rounded">Logout</button>
+        <nav class="flex items-center gap-3">
+          <a class="text-sm text-slate-700 hover:underline" href="/employee-search.html">Search</a>
+          <a class="text-sm text-slate-700 hover:underline" href="/report-generator.html">Reports</a>
+          <a class="text-sm text-slate-700 hover:underline" href="/admin-settings.html">Admin</a>
+          <a class="text-sm text-slate-700 hover:underline" href="/notification-center.html">Notifications</a>
+          <button id="logoutBtn" class="bg-slate-800 text-white px-4 py-2 rounded">Logout</button>
+        </nav>
       </header>
 
       <section class="bg-white p-6 rounded shadow mb-6">
@@ -98,6 +104,7 @@
             <td class="px-4 py-3">${renderFileLink(emp.profilePicturePath, 'view')}</td>
             <td class="px-4 py-3 whitespace-nowrap">
               <a class="bg-emerald-600 text-white px-3 py-1 rounded" href="/employee-detail.html?id=${emp.id}">Details</a>
+              <a class="bg-yellow-500 text-white px-3 py-1 rounded ml-2" href="/employee-edit.html?id=${emp.id}">Edit</a>
               <button data-id="${emp.internalCode}" class="deleteBtn bg-red-500 text-white px-3 py-1 rounded ml-2">Delete</button>
             </td>
           `;
