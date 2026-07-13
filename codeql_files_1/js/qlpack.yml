@@ -1,0 +1,5 @@
+name: emp-demo/codeql-files
+version: 0.0.1
+
+dependencies:
+  codeql/javascript-all: "*"
