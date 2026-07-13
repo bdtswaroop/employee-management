@@ -1,4 +1,4 @@
-name: emp-demo/codeql-files
+name: emp-demo/codeql-java-files
 version: 0.0.1
 
 dependencies:

@@ -14,6 +14,7 @@ import semmle.code.java.dataflow.TaintTracking
 import Flow::PathGraph
 
 import custom.sources
+import custom.sinks
 
 
 module DeserializationConfig implements DataFlow::ConfigSig {
